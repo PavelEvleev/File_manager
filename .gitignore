@@ -242,6 +242,5 @@ ModelManifest.xml
 .fake/
 /File_manager/File_manager/Properties
 *.config
-*.xaml
 *.csproj
 *.sln

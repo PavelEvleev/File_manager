@@ -21,18 +21,29 @@ namespace File_manager
     /// Interaction logic for MainWindow.xaml
     /// </summary>
 
-    
+
 
     public partial class MainWindow : Window
     {
         ObservableCollection<FileModel> _files;
         ObservableCollection<Drive> _drives;
+        public ObservableCollection<Drive> Drives
+        {
+            get; set;
+        }
+
+        public ObservableCollection<FileModel> Files
+        {
+            get; set;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
-            InitDrives(_drives);
+            InitDrives();
+            
         }
-        private void InitDrives(ObservableCollection<Drive> _drives)
+        private void InitDrives()
         {
             _drives = new ObservableCollection<Drive>();
             DriveInfo[] drive = DriveInfo.GetDrives();
@@ -46,16 +57,25 @@ namespace File_manager
                     AvailableFreeSpace = d.AvailableFreeSpace / 1024
                 });
             }
-            
+            Drives = _drives;
+            Drive_left.ItemsSource = Drives;
+            Drive_left.SelectedItem = _drives[0];
+            Drive_right.ItemsSource = Drives;
+            Drive_right.SelectedItem = _drives[0];
+            Files = InitFiles(_files, drive[0].Name);
+            LeftField.ItemsSource = Files;
+            RightField.ItemsSource = Files;
         }
         
-        private void InitFiles(ObservableCollection<FileModel> _files , string directory)
+       
+
+        private ObservableCollection<FileModel> InitFiles(ObservableCollection<FileModel> _files , string directory)
         {
             DirectoryInfo dir = new DirectoryInfo(directory);
             _files = new ObservableCollection<FileModel>();
             AddDir(_files, dir);
             AddFiles(_files, dir);
-
+            return _files;
         }
 
         private void AddDir(ObservableCollection<FileModel> filesCollection, DirectoryInfo dir)
@@ -87,6 +107,18 @@ namespace File_manager
                     Attributes = file.Attributes.ToString(),
                 });
             }
+        }
+
+        private void Drive_left_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var tmp = new ObservableCollection<FileModel>();
+            Drive dr = (sender as ComboBox).SelectedItem as Drive;
+            Files = InitFiles(tmp, dr.Name);
+        }
+
+        private void Drive_right_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
