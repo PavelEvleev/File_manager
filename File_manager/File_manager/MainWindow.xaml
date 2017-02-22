@@ -15,7 +15,7 @@
         <Grid Name="DirectoryColumns" Grid.Row="3">
             <Grid.RowDefinitions>
                 <RowDefinition Name="Drive" Height="auto"></RowDefinition>
-                <RowDefinition Name="Directoty_Drive" Height="auto"></RowDefinition>
+                <RowDefinition Name="Directoty_Drive" Height="250"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*"></ColumnDefinition>
