@@ -88,17 +88,24 @@ namespace File_manager
         {
             if (dir.Exists == true)
             {
-                DirectoryInfo[] folders = dir.GetDirectories();
-                foreach (var f in folders)
+                if (dir.Parent!=null)
                 {
-                    filesCollection.Add(new FileModel()
-                    {
-                        FileName = f.Name,
-                        IsDirectory = true,
-                        FullPath = f.FullName,
-                        Attributes = f.Attributes.ToString(),
-                    });
+                    filesCollection.Add(new FileModel() { FileName = "[ . . ]", FullPath = dir.Parent.FullName});
                 }
+                DirectoryInfo[] folders = dir.GetDirectories();
+                    foreach (var f in folders)
+                    {
+                    //не добавляем системные каталоги
+                        if (!f.Attributes.HasFlag(FileAttributes.Hidden|FileAttributes.Directory))
+                            filesCollection.Add(new FileModel()
+                            {
+                                FileName = f.Name,
+                                IsDirectory = true,
+                                FullPath = f.FullName,
+                                Attributes = f.Attributes.ToString()
+                            });
+                    }
+               
             }
         }
 
@@ -126,8 +133,7 @@ namespace File_manager
         {
             var tmp = new ObservableCollection<FileModel>();
             Drive dr = (sender as ComboBox).SelectedItem as Drive;
-            if (FilesL != null)
-                FilesL.Clear();
+            CurrentLeft.Text = dr.Name;
             FilesL = InitFiles(tmp, dr.Name);
             LeftField.ItemsSource = FilesL;
         }
@@ -136,8 +142,7 @@ namespace File_manager
         {
             var tmp = new ObservableCollection<FileModel>();
             Drive dr = (sender as ComboBox).SelectedItem as Drive;
-            if (FilesR != null)
-                FilesR.Clear();
+            CurrentRight.Text = dr.Name;
             FilesR = InitFiles(tmp, dr.Name);
             RightField.ItemsSource = FilesR;
         }
@@ -145,27 +150,35 @@ namespace File_manager
         private void LeftField_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             FileModel i = ((ListView)sender).SelectedItem as FileModel;
-            if (i != null)
+            var dirExist = System.IO.Directory.Exists(i.FullPath);
+            if (dirExist != false)
             {
-                CurrentLeft.Text = i.FullPath;
-                if (FilesL != null)
-                    FilesL.Clear();
-                FilesL = InitFiles(FilesL, i.FullPath);
-                LeftField.ItemsSource = FilesL;
+                if (i != null)
+                {
+                    CurrentLeft.Text = i.FullPath;
+                    ChangeView(FilesL, i.FullPath, LeftField);
+                }
             }
         }
 
         private void RightField_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             FileModel i = ((ListView)sender).SelectedItem as FileModel;
-            if (i != null)
+            var dirExist = System.IO.Directory.Exists(i.FullPath);
+            if (dirExist != false)
             {
-                CurrentRight.Text = i.FullPath;
-                if (FilesR != null)
-                    FilesR.Clear();
-                FilesR = InitFiles(FilesR, i.FullPath);
-                RightField.ItemsSource = FilesR;
+                if (i != null)
+                {
+                    CurrentRight.Text = i.FullPath;
+                    ChangeView(FilesR, i.FullPath, RightField);
+                }
             }
+        }
+
+        private void ChangeView(ObservableCollection<FileModel> FilesList, string dir, ListView list)
+        {
+            FilesList = InitFiles(FilesList, dir);
+            list.ItemsSource = FilesList;
         }
     }
 }
