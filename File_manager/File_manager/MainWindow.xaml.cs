@@ -149,14 +149,17 @@ namespace File_manager
 
         private void LeftField_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            FileModel i = ((ListView)sender).SelectedItem as FileModel;
-            var dirExist = System.IO.Directory.Exists(i.FullPath);
-            if (dirExist != false)
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
-                if (i != null)
+                FileModel i = ((ListView)sender).SelectedItem as FileModel;
+                var dirExist = System.IO.Directory.Exists(i.FullPath);
+                if (dirExist != false)
                 {
-                    CurrentLeft.Text = i.FullPath;
-                    ChangeView(FilesL, i.FullPath, LeftField);
+                    if (i != null)
+                    {
+                        CurrentLeft.Text = i.FullPath;
+                        ChangeView(FilesL, i.FullPath, LeftField);
+                    }
                 }
             }
         }
